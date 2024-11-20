@@ -88,11 +88,18 @@ def filter_calcHARD(df, org, dup, Elem,ldl):
         percentile_90=('difABS', lambda x: x.quantile(0.9))
     )
     mean_percentile_90 = percentile_stats['percentile_90'].mean()
+
+    # Print statistics
     n_total = len(filtered_results1)
+    #print('Count Dup HARD:', n_total)
+    #print('HARD Percentil 90%:', round(mean_percentile_90 * 100, 1))
+    #print('LimitLower:', ldl)
+
     # Mostrar estadísticas
     st.write(f"**Count Dup HARD:** {n_total}")
     st.write(f"**HARD Percentil 90%:** {round(mean_percentile_90 * 100, 1)}")
     st.write(f"**LimitLower:** {ldl}")
+
     return filtered_results1
 
 def resumen(filtered_data_ard, filtered_data_hard, maxx, org, dup, Elem, ldl, ARD):
