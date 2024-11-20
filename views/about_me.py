@@ -11,5 +11,5 @@ with col2:
         "**Resouces Geologist Senior and Data Analyst**"
     )
     st.write(
-        "Email: alext.delgadot@gmail.com"
+        "Email: "
     )
