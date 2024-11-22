@@ -7,7 +7,7 @@ import matplotlib.colors as mcol
 from sklearn.linear_model import LinearRegression
 import streamlit as st
 # ## Parametros
-def filter_calcARD(dataf, QC, org, dup, Elem, ldl, ARD):
+def filter_calcARD(dataf, QC, org, dup, Elem, ldl, ARD, xLDL):
     # Create a copy of the input DataFrame
     df = dataf.copy()
     # Drop rows with missing values in the specified columns
@@ -17,7 +17,7 @@ def filter_calcARD(dataf, QC, org, dup, Elem, ldl, ARD):
     #selected_columns = df_cleaned[['DataSet', 'Orig_SampleID', org, 'SampleID', dup]]
     # Define the limit based on the lower detection limit (LDL)
     #ldl
-    LD = ldl * 10
+    LD = ldl * xLDL
     
     # Classify values based on the LDL threshold
     classified = (selected_columns
