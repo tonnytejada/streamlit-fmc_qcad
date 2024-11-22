@@ -25,8 +25,8 @@ if uploaded_file is not None:
     with st.sidebar:
         st.subheader("Input Parameters")
         QC = st.multiselect('Value for QC Category', options=unique_qc_types, default=unique_qc_types)
-        org = st.text_input("Value for Original", value="Orig_Au")
-        dup = st.text_input("Value for Duplicate", value="Au_ppm")
+        org = st.text_input("Value for Original", value="Orig")
+        dup = st.text_input("Value for Duplicate", value="Dup")
         #Elem = st.text_input("Element", value="Au")
         Elem = st.multiselect('Value for Element', options=unique_element, default=unique_element)
         ldl = st.number_input("Detection limit (LDL)", format="%.3f")
@@ -38,6 +38,7 @@ if uploaded_file is not None:
                             step=0.05, 
                             format="%.2f", 
                             key="ARD")
+        xLDL = st.number_input("Times detection limit (xLDL)", format="%.0f")
     # Usar un slider en la barra lateral para ARD
     # Encontrar el valor máximo entre las dos columnas
     df = df1x[df1x['QC_Category'].isin(QC)&df1x['Element'].isin(Elem)]
@@ -57,7 +58,7 @@ if uploaded_file is not None:
     # Llamar a la función que procesa los datos (asegúrate de que la función esté definida correctamente)
     # Nota: Asegúrate de que el módulo scrptqc esté correctamente importado y las funciones definidas
     if 'scrptqc' in globals():
-        filtered_data_ard = scrptqc.filter_calcARD(df, QC, org, dup, Elem, ldl, ARD)
+        filtered_data_ard = scrptqc.filter_calcARD(df, QC, org, dup, Elem, ldl, ARD, xLDL)
         st.write(filtered_data_ard)
     else:
         st.warning("The scrptqc.filter_calcARD function is not defined or imported.")
