@@ -8,7 +8,7 @@ col1, col2 = st.columns(2, gap="small", vertical_alignment="center")
 with col2:
     st.title("Alex Delgado", anchor=False)
     st.write(
-        "**Resouces Geologist Senior and Data Analyst**"
+        "**Senior Resource Geologist and Data Analyst**"
     )
     st.write(
         "Email: "
