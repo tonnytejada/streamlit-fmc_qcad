@@ -4,8 +4,11 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.gridspec as gridspec
 import matplotlib.colors as mcol
+#import sklearn
 from sklearn.linear_model import LinearRegression
+#from sklearn import linear_model, datasets
 import streamlit as st
+
 # ## Parametros
 def filter_calcARD(dataf, QC, org, dup, Elem, ldl, ARD, xLDL):
     # Create a copy of the input DataFrame
@@ -31,28 +34,46 @@ def filter_calcARD(dataf, QC, org, dup, Elem, ldl, ARD, xLDL):
     filtered_data = classified[~classified.union.isin(['Fail-Fail'])]
     # Calculate absolute and relative differences
     filtered_data = (filtered_data
-                     .assign(
-                         difABS=lambda x: abs(x[org] - x[dup]) / ((x[org] + x[dup]) / 2),
-                         difREL=lambda x: (x[org] - x[dup]) / ((x[org] + x[dup]) / 2) * 100,
-                         Success='n'
-                     )
                      .assign(Success=lambda x: x.Success.mask(x.difABS < ARD, 'y'))
                      #.assign(NuEff=lambda x: x.Success.mask(x.difREL > NE, '
                     )
+    
+    #filter_data1 = filtered_data = df[df['difABS'] < Outliers]
+        
     # Calculate statistics
     n_total_data = len(df_cleaned)
     n_total = len(filtered_data)
     n_warnings = len(filtered_data[filtered_data['Success'] == 'y'])
-    pctDups = (n_warnings / n_total * 100) if n_total > 0 else 0   
+    pctDups = (n_warnings / n_total * 100) if n_total > 0 else 0
+    ## filter
+    #n_totalwf = len(filter_data1)
+    #n_warningswf = len(filter_data1[filter_data1['Success'] == 'y'])
+    #pctDupswf = (n_warningswf / n_totalwf * 100) if n_total > 0 else 0
+    # Print statistics
+    #print(QC)
+    #print('Element:', Elem[0])
+    #print('Count Total Data:', n_total_data)
+    #print('Count Dup ARD:', n_total)
+    #print('Total ARD pct:', round(pctDups, 1))
+    #print(f'Total ARD: {round(pctDups, 0)}%')
+    
     # Mostrar estadísticas
-    st.write(f"**QC Category:** {QC}")
+    st.write(f"**QC Category:** {QC[0]}")
     st.write(f"**Element    :** {Elem[0]}")
     st.write(f"**Count      :** {n_total_data}")
     st.write(f"**Count ARD  :** {n_total}")
-    st.write(f"**% Dup ARD  :** {round(pctDups, 0)}")    
+    st.write(f"**% Dup ARD  :** {round(pctDups, 0)}")
+    #
+    #st.write(f"**QC Category:** {QC}")
+    #st.write(f"**Element    :** {Elem[0]}")
+    #st.write(f"**Count      :** {n_total_data}")
+    #st.write(f"**Count ARD without outliers :** {n_totalwf}")
+    #st.write(f"**% Dup ARD without outliers :** {round(pctDupswf, 0)}")
+    #filtered_data1 = filtered_data['DataSet', 'SampleID', org, dup, QC, Elem]
+    
     return filtered_data #, message
 
-def filter_calcHARD(df, org, dup, Elem,ldl):
+def filter_calcHARD(df, org, dup, Elem, ldl):
     # Create a copy of the input DataFrame
     #df = datafh.copy()
     # Drop rows with missing values in the specified columns
@@ -210,3 +231,9 @@ def plot_mapd(filtered_data_hard, ax):
     ax.set_ylim(ymin=0, ymax=maxs)
     ax.set_ylabel('Half Absolute Relative Difference', fontsize=12)
     ax.set_xlabel('HARD Rank', fontsize=12)
+
+def buscar_columna(df, posibles_nombres):
+    for nombre in posibles_nombres:
+        if nombre in df.columns:
+            return nombre
+    return None
