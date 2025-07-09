@@ -15,21 +15,24 @@ if uploaded_file is not None:
     #df = df1x[df1x['QC_Category'].str.startswith('y')]
     # Mostrar un resumen de las primeras filas del DataFrame
     st.write(df1x.head())
-    # Definir parámetros con entradas interactivas para los usuarios
+    # Definir parámetros con entradas interactivas para los usuarios        
     #st.subheader("Parámetros de Entrada")
     # Parámetros que el usuario puede modificar
     unique_qc_types = df1x['QC_Category'].unique()
     unique_element = df1x['Element'].unique()
     #st.write(unique_qc_types)
     # Usar esos valores únicos en el selectbox
+    orginal_col = scrptqc.buscar_columna(df1x, ['Orig', 'OriginalResult', 'Original_Au_ppm', 'Orig_Au'])  
+    duplicate_col = scrptqc.buscar_columna(df1x, ['Dup', 'RepeatResult', 'Duplicate_Au_ppm','Au_ppm'])
     with st.sidebar:
         st.subheader("Input Parameters")
         QC = st.multiselect('Value for QC Category', options=unique_qc_types, default=unique_qc_types)
-        org = st.text_input("Value for Original", value="Orig")
-        dup = st.text_input("Value for Duplicate", value="Dup")
+
+        org = st.text_input("Value for Original", value=orginal_col)# 'org'
+        dup = st.text_input("Value for Duplicate", value=duplicate_col) #'dup'
         #Elem = st.text_input("Element", value="Au")
         Elem = st.multiselect('Value for Element', options=unique_element, default=unique_element)
-        ldl = st.number_input("Detection limit (LDL)", format="%.3f")
+        ldl = st.number_input("Detection limit (Limit Lower)", value=0.01, format="%.3f")
         # Usar un slider en la barra lateral para ARD
         ARD = st.slider("Select ARD percentage", 
                             min_value=0.1, 
@@ -38,7 +41,14 @@ if uploaded_file is not None:
                             step=0.05, 
                             format="%.2f", 
                             key="ARD")
-        xLDL = st.number_input("Times detection limit (xLDL)", format="%.0f")
+        xLDL = st.number_input("Times detection limit (xLw)", step=1, format="%i")
+        Outliers = st.slider("If exists Outliers", 
+                            min_value=0.5, 
+                            max_value=2.0, 
+                            value=2.0, 
+                            step=0.1, 
+                            format="%.2f", 
+                            key="Outliers")
     # Usar un slider en la barra lateral para ARD
     # Encontrar el valor máximo entre las dos columnas
     df = df1x[df1x['QC_Category'].isin(QC)&df1x['Element'].isin(Elem)]
@@ -46,6 +56,15 @@ if uploaded_file is not None:
     # Redondear el valor máximo al siguiente múltiplo de 5
     rounded_max = 5 * round(max_value / 5)
     with st.sidebar:
+        #Outliers = st.slider("If exists Outliers",
+        #                        min_value=0.5, 
+        #                        max_value=2, 
+        #                        value=2, 
+        #                        step=0.1, 
+        #                        format="%.1f", 
+        #                        key="Outliers")
+        #Outliers = st.number_input("If exists Outliers", value=2.0, format="%.1f")
+     #with st.sidebar:
         MAX = st.slider("Select Max value", 
                             min_value=0, 
                             max_value=rounded_max+10, 
@@ -53,6 +72,13 @@ if uploaded_file is not None:
                             step=1, 
                             format="%.2f", 
                             key="MAX")
+    filtered_data = (df
+                     .assign(
+                         difABS=lambda x: abs(x[org] - x[dup]) / ((x[org] + x[dup]) / 2),
+                         difREL=lambda x: (x[org] - x[dup]) / ((x[org] + x[dup]) / 2) * 100,
+                         Success='n')
+                    )    
+    df = filtered_data[filtered_data['difABS'] < Outliers]      
     # Subtítulo para ARD Summary
     st.subheader("ARD Summary", divider="gray")
     # Llamar a la función que procesa los datos (asegúrate de que la función esté definida correctamente)
