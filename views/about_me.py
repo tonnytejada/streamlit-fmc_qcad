@@ -14,6 +14,6 @@ with col2:
         "Email: "
     )
     st.write(
-        "There is a new version. Try it out.: https://app-fmcappqc-v1-fmc-ad.streamlit.app/
+        "There is a new version. Try it out.: https://app-fmcappqc-v1-fmc-ad.streamlit.app/"
     )
     
