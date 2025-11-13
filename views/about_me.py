@@ -13,3 +13,7 @@ with col2:
     st.write(
         "Email: "
     )
+    st.write(
+        "There is a new version. Try it out.: https://app-fmcappqc-v1-fmc-ad.streamlit.app/
+    )
+    
